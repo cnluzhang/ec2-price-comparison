@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: ec2-price-comparison-frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_BASE_URL=http://localhost:3001/api
+      - NODE_ENV=development
+    depends_on:
+      - backend
+    networks:
+      - ec2-price-comparison-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ec2-price-comparison-backend
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    environment:
+      - PORT=3001
+      - NODE_ENV=development
+      # AWS credentials should be mounted from your local environment or use .env file
+      # - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      # - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      # - AWS_CN_ACCESS_KEY_ID=${AWS_CN_ACCESS_KEY_ID}
+      # - AWS_CN_SECRET_ACCESS_KEY=${AWS_CN_SECRET_ACCESS_KEY}
+    env_file:
+      - ./backend/.env
+    networks:
+      - ec2-price-comparison-network
+
+networks:
+  ec2-price-comparison-network:
