@@ -2,6 +2,8 @@
 
 A full-stack application that compares EC2 instance pricing across multiple AWS regions, with support for both on-demand and reserved instances. 
 
+> **⚠️ DISCLAIMER:** This tool is for development and educational purposes only. Not affiliated with or endorsed by Amazon Web Services. Pricing data may not be accurate for decision-making. See full disclaimer below.
+
 > **Developed with modern AI tools:**
 > - [Cursor](https://cursor.sh/) - AI-powered code editor
 > - [Claude Code](https://claude.ai/code) - AI assistant for software development
@@ -10,7 +12,7 @@ A full-stack application that compares EC2 instance pricing across multiple AWS 
 
 **Sean Chang** (<sean@jinshuju.net>)
 
-![EC2 Price Comparison Tool](https://via.placeholder.com/800x400?text=EC2+Price+Comparison+Tool)
+![EC2 Price Comparison Tool Screenshot](./screenshot.jpeg)
 
 ## Features
 
@@ -365,6 +367,22 @@ Returns pricing information for specified regions and instance types.
 - Use consistent naming conventions (camelCase for variables, PascalCase for components)
 - Add appropriate comments for complex logic
 - Run linting before committing: `npm run lint`
+
+## Disclaimer
+
+This project, EC2 Price Comparison Tool, is:
+- **Not affiliated with Amazon Web Services (AWS)**: This is an independent project not endorsed by, affiliated with, or sponsored by Amazon Web Services or its affiliates.
+- **For development and educational purposes only**: The information and functionality provided by this application are intended solely for development, testing, and educational purposes.
+- **Not guaranteed for accuracy**: While we strive for accuracy, we make no guarantees regarding the correctness, completeness, or reliability of pricing information or other data presented.
+- **Not for production use**: This tool should not be used for production environments or for making financial or business decisions without independent verification.
+- **Subject to AWS Terms of Service**: Usage of AWS APIs through this tool is subject to the AWS Terms of Service and other applicable AWS policies.
+- **Provided "as is"**: This software is provided "as is", without warranty of any kind, express or implied.
+
+Users are responsible for:
+- Verifying any pricing information with official AWS sources before making decisions
+- Ensuring their use of this tool complies with AWS Terms of Service
+- Any costs incurred through AWS accounts used with this tool
+- Proper handling of AWS credentials and compliance with security best practices
 
 ## License
 

@@ -146,6 +146,10 @@ function App() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-[#1a1a1a] to-black text-gray-100">
       <div className="max-w-5xl mx-auto px-4 py-12">
+        <div className="mb-4 px-4 py-2 bg-gray-800/50 rounded-md text-amber-300 text-xs text-center">
+          ⚠️ 免责声明：本工具仅供开发和教育目的使用。与 AWS 无关联。价格数据可能不准确，请勿用于决策。
+        </div>
+        
         {/* Input Section */}
         <InputSection 
           instanceType={instanceType}
