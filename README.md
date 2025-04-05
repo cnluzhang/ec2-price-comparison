@@ -12,6 +12,8 @@ A full-stack application that compares EC2 instance pricing across multiple AWS 
 
 **Sean Chang** (<sean@jinshuju.net>)
 
+![EC2 Price Comparison Tool with MCP Integration](./screenshot-2.png)
+
 ![EC2 Price Comparison Tool Screenshot](./screenshot.jpeg)
 
 ## Features
