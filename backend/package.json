@@ -11,7 +11,11 @@
     "start": "node dist/server.js",
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "mcp": "node ./run-mcp.js",
+    "mcp:prod": "node ./run-mcp.js --prod",
+    "mcp:build": "tsc",
+    "mcp:test": "ts-node src/test-mcp.ts"
   },
   "keywords": [],
   "license": "MIT",

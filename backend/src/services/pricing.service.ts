@@ -4,6 +4,7 @@ import {
   EC2Price,
   Region,
   InstanceType,
+  InstanceSpecification,
   AwsRegion,
   TermAttributes,
   PriceDimension,
@@ -223,7 +224,7 @@ export class PricingService {
           operatingSystem: 'Linux',
           price,
           currency: currency || 'USD', // Use 'USD' as fallback
-          specifications,
+          specifications: specifications || undefined,
           // Always include on-demand price for comparison regardless of price type
           onDemandPrice,
           onDemandCurrency,
@@ -243,7 +244,7 @@ export class PricingService {
           operatingSystem: 'Linux',
           price: null,
           currency: 'USD',
-          specifications,
+          specifications: specifications || undefined,
           // Always include on-demand price for comparison
           onDemandPrice,
           onDemandCurrency,

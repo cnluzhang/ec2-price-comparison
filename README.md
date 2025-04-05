@@ -24,6 +24,7 @@ A full-stack application that compares EC2 instance pricing across multiple AWS 
 - **Visual Comparison**: Interactive chart visualization with highlighted lowest-cost options
 - **Real-time Data**: Direct integration with AWS Pricing API for current pricing information
 - **Responsive Design**: Optimized for both desktop and mobile viewing
+- **MCP Integration**: Support for Model Context Protocol enabling LLMs to access pricing data
 
 ## Tech Stack
 
@@ -143,6 +144,15 @@ The application follows a client-server architecture:
    npm run build
    ```
 
+6. Run the MCP server (Model Context Protocol):
+   ```bash
+   # Development mode
+   npm run mcp
+   
+   # Production mode
+   npm run mcp:build
+   ```
+
 #### Frontend Setup
 
 1. Navigate to the frontend directory:
@@ -205,7 +215,7 @@ The application follows a client-server architecture:
 
 ## API Reference
 
-### Endpoints
+### REST API Endpoints
 
 #### GET /api/pricing
 
@@ -242,6 +252,35 @@ Returns pricing information for specified regions and instance types.
 }
 ```
 
+### MCP Integration
+
+The application supports the Model Context Protocol (MCP), allowing LLMs to access EC2 pricing data directly.
+
+#### MCP Resources
+
+- `ec2://instance-types` - Lists available EC2 instance types
+- `ec2://exchange-rate` - Returns the CNY to USD exchange rate
+- `ec2://supported-regions` - Lists all supported AWS regions, explicitly including China regions
+
+#### MCP Tools
+
+- `getInstancePrices` - Fetches prices for EC2 instances
+  - Parameters: `instanceType`, `regions` (optional), `priceType` (optional)
+
+- `getInstanceSpecs` - Retrieves specifications for an EC2 instance type
+  - Parameters: `instanceType`, `region` (optional)
+
+- `findCheapestRegion` - Finds the cheapest AWS region with automatic USD conversion
+  - Parameters: `instanceType`, `priceType` (optional)
+  - Automatically converts all prices to USD for accurate comparison
+
+#### MCP Prompts
+
+- `compare-prices` - Compare EC2 instance prices across AWS regions including China regions
+- `instance-specs` - Get detailed specifications for an EC2 instance type
+
+For detailed documentation on using the MCP integration, see [backend/MCP.md](backend/MCP.md).
+
 ## Project Structure
 
 ```
@@ -252,8 +291,11 @@ Returns pricing information for specified regions and instance types.
     /middleware  # Express middleware
     /routes      # API route definitions
     /services    # Business logic and AWS API interaction
+                 # Includes MCP service for AI integration
     /types       # TypeScript type definitions
     /utils       # Helper functions
+    mcp-server.ts # MCP server entry point
+  MCP.md        # MCP integration documentation
 
 /frontend
   /src

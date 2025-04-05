@@ -41,6 +41,23 @@ services:
       - ./backend/.env
     networks:
       - ec2-price-comparison-network
+      
+  mcp:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ec2-price-comparison-mcp
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      # AWS credentials shared with backend
+    env_file:
+      - ./backend/.env
+    command: npm run mcp
+    networks:
+      - ec2-price-comparison-network
 
 networks:
   ec2-price-comparison-network:
