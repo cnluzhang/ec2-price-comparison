@@ -1,6 +1,6 @@
-# EC2 Price Comparison Tool
+# EC2 Price Comparison Tool with MCP Integration
 
-A full-stack application that compares EC2 instance pricing across multiple AWS regions, with support for both on-demand and reserved instances. 
+A full-stack application that compares EC2 instance pricing across multiple AWS regions, with support for both on-demand and reserved instances. Includes native Model Context Protocol (MCP) integration enabling AI assistants to access real-time EC2 pricing data.
 
 > **⚠️ DISCLAIMER:** This tool is for development and educational purposes only. Not affiliated with or endorsed by Amazon Web Services. Pricing data may not be accurate for decision-making. See full disclaimer below.
 
@@ -16,15 +16,16 @@ A full-stack application that compares EC2 instance pricing across multiple AWS 
 
 ## Features
 
-- **Multi-Region Comparison**: Compare EC2 instance prices across multiple AWS regions simultaneously
+- **AI Integration via MCP**: Native Model Context Protocol support allowing AI assistants to query and analyze EC2 pricing data
+- **Multi-Region Comparison**: Compare EC2 instance prices across ALL AWS regions including China regions
+- **Data Visualization**: Interactive tables and charts with automatic data insights and cost-saving recommendations
 - **Price Type Options**: Switch between On-Demand, 1-Year Reserved, and 3-Year Reserved pricing models
 - **Customizable Instance Types**: Choose from preset options or enter any valid EC2 instance type
 - **Detailed Instance Specifications**: View comprehensive instance attributes (vCPUs, Memory, Network Performance, etc.)
-- **Currency Selection**: Toggle between USD and CNY for price display
+- **Currency Selection**: Toggle between USD and CNY with automatic currency conversion
 - **Visual Comparison**: Interactive chart visualization with highlighted lowest-cost options
 - **Real-time Data**: Direct integration with AWS Pricing API for current pricing information
 - **Responsive Design**: Optimized for both desktop and mobile viewing
-- **MCP Integration**: Support for Model Context Protocol enabling LLMs to access pricing data
 
 ## Tech Stack
 

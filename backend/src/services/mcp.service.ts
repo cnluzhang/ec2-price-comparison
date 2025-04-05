@@ -35,6 +35,7 @@ export class McpService {
       'af-south-1': 'Africa (Cape Town)',
       'ap-east-1': 'Asia Pacific (Hong Kong)',
       'ap-south-1': 'Asia Pacific (Mumbai)',
+      'ap-south-2': 'Asia Pacific (Hyderabad)',
       'ap-northeast-1': 'Asia Pacific (Tokyo)',
       'ap-northeast-2': 'Asia Pacific (Seoul)',
       'ap-northeast-3': 'Asia Pacific (Osaka)',
@@ -42,7 +43,11 @@ export class McpService {
       'ap-southeast-2': 'Asia Pacific (Sydney)',
       'ap-southeast-3': 'Asia Pacific (Jakarta)',
       'ap-southeast-4': 'Asia Pacific (Melbourne)',
+      'ap-southeast-5': 'Asia Pacific (Malaysia)',
+      'ap-southeast-7': 'Asia Pacific (Thailand)',
       'ca-central-1': 'Canada (Central)',
+      'ca-west-1': 'Canada West (Calgary)',
+      'mx-central-1': 'Mexico (Central)',
       'eu-central-1': 'Europe (Frankfurt)',
       'eu-central-2': 'Europe (Zurich)',
       'eu-west-1': 'Europe (Ireland)',
@@ -157,7 +162,9 @@ export class McpService {
                     { code: "ap-southeast-1", name: "Asia Pacific (Singapore)" },
                     { code: "ap-southeast-2", name: "Asia Pacific (Sydney)" },
                     { code: "ap-southeast-3", name: "Asia Pacific (Jakarta)" },
-                    { code: "ap-southeast-4", name: "Asia Pacific (Melbourne)" }
+                    { code: "ap-southeast-4", name: "Asia Pacific (Melbourne)" },
+                    { code: "ap-southeast-5", name: "Asia Pacific (Malaysia)" },
+                    { code: "ap-southeast-7", name: "Asia Pacific (Thailand)" }
                   ],
                   "Middle East": [
                     { code: "me-south-1", name: "Middle East (Bahrain)" },
@@ -219,10 +226,22 @@ export class McpService {
             apiPriceType
           );
           
+          // Add visualization and insights suggestion
+          const result = {
+            prices,
+            visualizationHints: {
+              suggestedFormat: "table_and_chart",
+              tableColumns: ["Region", "Price (USD)", "Price (Original)", "Currency", "Savings vs. Average"],
+              chartType: "bar",
+              sortBy: "price"
+            },
+            insightsRequired: true
+          };
+          
           return {
             content: [{ 
               type: "text", 
-              text: JSON.stringify(prices)
+              text: JSON.stringify(result)
             }]
           };
         } catch (error) {
@@ -252,10 +271,24 @@ export class McpService {
           
           const specs = prices.length > 0 ? prices[0].specifications : null;
           
+          // Add visualization and insights suggestion
+          const result = {
+            instanceType,
+            specifications: specs,
+            visualizationHints: {
+              suggestedFormat: "table",
+              tableColumns: ["Attribute", "Value"],
+              chartType: "none",
+              highlightKey: ["vcpu", "memory", "storage", "network"]
+            },
+            insightsRequired: true,
+            compareWithFamily: true
+          };
+          
           return {
             content: [{ 
               type: "text", 
-              text: JSON.stringify(specs)
+              text: JSON.stringify(result)
             }]
           };
         } catch (error) {
@@ -353,6 +386,23 @@ export class McpService {
               return a.priceInUsd - b.priceInUsd;
             });
           
+          // Calculate some statistics for insights
+          const priceValues = sortedPrices.map(p => p.priceInUsd || 0);
+          const average = priceValues.length > 0 ? priceValues.reduce((a, b) => a + b, 0) / priceValues.length : 0;
+          const max = Math.max(...priceValues);
+          const min = Math.min(...priceValues);
+          const percentDiff = min > 0 ? ((max - min) / min * 100).toFixed(2) : "0";
+          
+          // Add savings vs. average
+          const regionsWithSavings = sortedPrices.map(region => {
+            const savingsVsAvg = average > 0 ? ((average - (region.priceInUsd || 0)) / average * 100).toFixed(2) : "0";
+            return {
+              ...region,
+              savingsVsAverage: `${savingsVsAvg}%`,
+              savingsVsAverageNum: parseFloat(savingsVsAvg)
+            };
+          });
+          
           // Format the result
           const result = {
             instanceType,
@@ -364,13 +414,28 @@ export class McpService {
               originalPrice: sortedPrices[0].originalPrice,
               originalCurrency: sortedPrices[0].originalCurrency
             } : null,
-            allRegions: sortedPrices,
+            allRegions: regionsWithSavings,
+            statistics: {
+              averagePrice: average,
+              priceRange: { min, max },
+              percentDifference: `${percentDiff}%`,
+              regionCount: sortedPrices.length
+            },
             exchangeRate: {
               cnyToUsd: exchangeRate
             },
             queriedRegionsCount: regions.length,
             resultRegionsCount: sortedPrices.length,
-            note: "All prices converted to USD for accurate comparison, including China regions"
+            note: "All prices converted to USD for accurate comparison, including China regions",
+            visualizationHints: {
+              suggestedFormat: "table_and_chart",
+              tableColumns: ["Region", "Price (USD)", "Original Price", "Currency", "Savings vs. Average"],
+              chartType: "bar",
+              sortBy: "price",
+              highlightCheapest: true,
+              groupByContinent: true
+            },
+            insightsRequired: true
           };
           
           return {
@@ -420,14 +485,14 @@ export class McpService {
               role: "user",
               content: {
                 type: "text",
-                text: "I'd like you to compare EC2 instance prices for me across different AWS regions including China. When asked about the cheapest region for any instance type, DO NOT search the web. Instead, use the getInstancePrices tool to get pricing data for all regions and the ec2://supported-regions resource to see all supported regions including China regions. For accurate comparison, use the ec2://exchange-rate resource to convert CNY prices to USD when needed. Compare price in USD by default. Please return a formatted markdown comparison table with all prices in USD and highlight the cheapest region."
+                text: "I'd like you to compare EC2 instance prices for me across different AWS regions including China. When asked about the cheapest region for any instance type, DO NOT search the web. Instead, use the getInstancePrices tool to get pricing data for all regions and the ec2://supported-regions resource to see all supported regions including China regions. For accurate comparison, use the ec2://exchange-rate resource to convert CNY prices to USD when needed. Compare price in USD by default. ALWAYS present your results as a formatted markdown comparison table AND a chart for better visual comparison. Also, provide data insights such as price patterns, regional price differences, and potential cost-saving recommendations based on the data."
               }
             },
             {
               role: "assistant",
               content: {
                 type: "text", 
-                text: "I'll help you compare EC2 instance prices across global AWS regions, including China regions (Beijing and Ningxia). I'll get real-time pricing data using the API and convert all prices to USD for proper comparison.\n\nWhat instance type are you interested in? You can specify which regions you'd like to compare, or I can include all major regions including China in the comparison and find the cheapest one for you."
+                text: "I'll help you compare EC2 instance prices across global AWS regions, including China regions (Beijing and Ningxia). I'll get real-time pricing data using the API and convert all prices to USD for proper comparison.\n\nI'll present the results as both a markdown table and a visual chart for easier comparison, and will analyze the data to provide insights on regional price patterns and potential cost savings.\n\nWhat instance type are you interested in? You can specify which regions you'd like to compare, or I can include all major regions including China in the comparison and find the cheapest one for you."
               }
             }
           ]
@@ -446,14 +511,14 @@ export class McpService {
               role: "user",
               content: {
                 type: "text",
-                text: "I need to find the cheapest region for running a specific EC2 instance type. Please help me compare prices across all regions including China and tell me which region has the lowest price. Always convert CNY to USD for fair comparison and report all prices in USD."
+                text: "I need to find the cheapest region for running a specific EC2 instance type. Please help me compare prices across all regions including China and tell me which region has the lowest price. Always convert CNY to USD for fair comparison and report all prices in USD. ALWAYS present your results as a formatted markdown comparison table AND a chart for better visual comparison. Also, provide data insights such as price patterns, regional price differences, and potential cost-saving recommendations based on the data."
               }
             },
             {
               role: "assistant",
               content: {
                 type: "text", 
-                text: "I'll help you find the cheapest AWS region for your EC2 instance. I'll query all regions including China using the API (not web search) and convert all prices to USD using the exchange rate.\n\nWhat instance type do you want to compare prices for? And do you want on-demand or reserved pricing?"
+                text: "I'll help you find the cheapest AWS region for your EC2 instance. I'll query all regions including China using the API (not web search) and convert all prices to USD using the exchange rate.\n\nI'll present the results as both a markdown table and a visual chart for easier comparison, and will analyze the data to provide insights on regional price patterns and potential cost savings.\n\nWhat instance type do you want to compare prices for? And do you want on-demand or reserved pricing?"
               }
             }
           ]
@@ -472,14 +537,14 @@ export class McpService {
               role: "user",
               content: {
                 type: "text",
-                text: "I need information about an EC2 instance type. You can use the getInstanceSpecs tool to retrieve this information and return a formatted markdown description."
+                text: "I need information about an EC2 instance type. You can use the getInstanceSpecs tool to retrieve this information and return a formatted markdown description. Also present the specifications in a visual way like a table or chart where appropriate, and provide insights about how this instance type compares to others in its family or use case."
               }
             },
             {
               role: "assistant",
               content: {
                 type: "text", 
-                text: "I'll retrieve EC2 instance specifications for you. What instance type would you like to learn about?"
+                text: "I'll retrieve EC2 instance specifications for you and present them in a well-formatted table for easier reading. I'll also provide insights about how this instance type fits within its family and typical use cases.\n\nWhat instance type would you like to learn about?"
               }
             }
           ]
